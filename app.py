@@ -22,9 +22,8 @@ app = FastAPI()
 UPLOAD_DIR = "uploads/original"
 PREDICTED_DIR = "uploads/predicted"
 DB_PATH = "predictions.db"
-S3_BUCKET = "aseel-polybot-images"
-S3_REGION = "eu-north-1"  # e.g., "us-east-1"
-
+REGION=os.environ['REGION']
+BUCKET_NAME=os.environ['BUCKET_NAME']
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(PREDICTED_DIR, exist_ok=True)
 
@@ -102,8 +101,8 @@ async def predict(image_name: Optional[str] = Form(None), file: Optional[UploadF
             predicted_path = os.path.join(PREDICTED_DIR, uid + ext)
 
             # Download from S3
-            s3 = boto3.client("s3", region_name=S3_REGION)
-            s3_object = s3.get_object(Bucket=S3_BUCKET, Key=image_name)
+            s3 = boto3.client("s3",REGION)
+            s3_object = s3.get_object(Bucket=BUCKET_NAME, Key=image_name)
             image_bytes = s3_object["Body"].read()
             image = Image.open(io.BytesIO(image_bytes))
             image.save(original_path)
@@ -126,7 +125,7 @@ async def predict(image_name: Optional[str] = Form(None), file: Optional[UploadF
         annotated_image = Image.fromarray(annotated_frame)
         annotated_image.save(predicted_path)
         # Upload predicted image to S3
-        s3.upload_file(predicted_path, S3_BUCKET, f"predicted/{uid}{ext}")
+        s3.upload_file(predicted_path,BUCKET_NAME, f"predicted/{uid}{ext}")
 
         save_prediction_session(uid, original_path, predicted_path)
 
