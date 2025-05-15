@@ -6,6 +6,12 @@ import sqlite3
 import os
 import uuid
 import shutil
+import boto3
+from fastapi import Body
+from pydantic import BaseModel
+import io
+from fastapi import FastAPI, File, UploadFile, Form, HTTPException
+
 
 # Disable GPU usage
 import torch
@@ -16,6 +22,8 @@ app = FastAPI()
 UPLOAD_DIR = "uploads/original"
 PREDICTED_DIR = "uploads/predicted"
 DB_PATH = "predictions.db"
+S3_BUCKET = "aseel-polybot-images"
+S3_REGION = "eu-north-1"  # e.g., "us-east-1"
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(PREDICTED_DIR, exist_ok=True)
@@ -75,41 +83,72 @@ def save_detection_object(prediction_uid, label, score, box):
             VALUES (?, ?, ?, ?)
         """, (prediction_uid, label, score, str(box)))
 
+from typing import Optional, Union
+class PredictionRequest(BaseModel):
+    image_name: str
+
 @app.post("/predict")
-def predict(file: UploadFile = File(...)):
+async def predict(image_name: Optional[str] = Form(None), file: Optional[UploadFile] = File(None)):
     """
-    Predict objects in an image
+    Predict objects in an image fetched from S3
     """
-    ext = os.path.splitext(file.filename)[1]
-    uid = str(uuid.uuid4())
-    original_path = os.path.join(UPLOAD_DIR, uid + ext)
-    predicted_path = os.path.join(PREDICTED_DIR, uid + ext)
+    try:
+        uid = str(uuid.uuid4())
+        #image_name = data.image_name
+        if image_name:
+        #uid = str(uuid.uuid4())
+            ext = os.path.splitext(image_name)[1]
+            original_path = os.path.join(UPLOAD_DIR, uid + ext)
+            predicted_path = os.path.join(PREDICTED_DIR, uid + ext)
 
-    with open(original_path, "wb") as f:
-        shutil.copyfileobj(file.file, f)
+            # Download from S3
+            s3 = boto3.client("s3", region_name=S3_REGION)
+            s3_object = s3.get_object(Bucket=S3_BUCKET, Key=image_name)
+            image_bytes = s3_object["Body"].read()
+            image = Image.open(io.BytesIO(image_bytes))
+            image.save(original_path)
 
-    results = model(original_path, device="cpu")
+        elif file:
+            ext = os.path.splitext(file.filename)[1]
+            original_path = os.path.join(UPLOAD_DIR, uid + ext)
+            predicted_path = os.path.join(PREDICTED_DIR, uid + ext)
 
-    annotated_frame = results[0].plot()  # NumPy image with boxes
-    annotated_image = Image.fromarray(annotated_frame)
-    annotated_image.save(predicted_path)
+            contents = await file.read()
+            image = Image.open(io.BytesIO(contents))
+            image.save(original_path)
 
-    save_prediction_session(uid, original_path, predicted_path)
-    
-    detected_labels = []
-    for box in results[0].boxes:
-        label_idx = int(box.cls[0].item())
-        label = model.names[label_idx]
-        score = float(box.conf[0])
-        bbox = box.xyxy[0].tolist()
-        save_detection_object(uid, label, score, bbox)
-        detected_labels.append(label)
+        else:
+            raise HTTPException(status_code=400, detail="Either image_name or file must be provided")
+        # Run YOLO detection
+        results = model(original_path, device="cpu")
 
-    return {
-        "prediction_uid": uid, 
-        "detection_count": len(results[0].boxes),
-        "labels": detected_labels
-    }
+        annotated_frame = results[0].plot()
+        annotated_image = Image.fromarray(annotated_frame)
+        annotated_image.save(predicted_path)
+        # Upload predicted image to S3
+        s3.upload_file(predicted_path, S3_BUCKET, f"predicted/{uid}{ext}")
+
+        save_prediction_session(uid, original_path, predicted_path)
+
+        detected_labels = []
+        for box in results[0].boxes:
+            label_idx = int(box.cls[0].item())
+            label = model.names[label_idx]
+            score = float(box.conf[0])
+            bbox = box.xyxy[0].tolist()
+            save_detection_object(uid, label, score, bbox)
+            detected_labels.append(label)
+
+        return {
+            "prediction_uid": uid,
+            "detection_count": len(results[0].boxes),
+            "labels": detected_labels
+        }
+
+    except Exception as e:
+        print(f"Error during prediction: {e}")
+        raise HTTPException(status_code=500, detail="Failed to process image from S3")
+
 
 @app.get("/prediction/{uid}")
 def get_prediction_by_uid(uid: str):
