@@ -20,7 +20,7 @@ jobs:
 
       - name: 📦 Setup or reuse virtual environment
         run: |
-          if [ -d "venv" ]; then
+          if [ -d ".venv" ]; then
             echo "Virtual environment exists. Activating venv."
           else
             echo "Creating virtual environment..."
