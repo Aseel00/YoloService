@@ -34,4 +34,4 @@ jobs:
       - name: ✅ Run API tests
         run: |
           source venv/bin/activate
-          pytest tests/test_api.py
+          pytest tests/test_predict.py
