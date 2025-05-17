@@ -13,6 +13,8 @@ torch.cuda.is_available = lambda: False
 
 
 #test test
+
+
 app = FastAPI()
 
 UPLOAD_DIR = "uploads/original"
