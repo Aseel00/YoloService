@@ -14,15 +14,25 @@ if [ ! -d "$VENV_DIR" ]; then
   python3 -m venv "$VENV_DIR"
 fi
 
-# Step 2: Activate virtual environment and install dependencies
-echo "📦 Installing Python dependencies..."
+# Step 2: Activate virtual environment
+echo "🔌 Activating virtual environment..."
 source "$VENV_DIR/bin/activate"
-#pip install --upgrade pip
-#pip install -r requirements.txt
-#pip install -r torch-requirements.txt
-#deactivate
 
-# Step 3: Copy the systemd service file
+# Step 3: Check if dependencies are installed
+# We'll check if a key package from requirements.txt is installed (e.g., fastapi)
+# Modify PACKAGE_TO_CHECK if needed
+PACKAGE_TO_CHECK="fastapi"
+
+if ! pip show "$PACKAGE_TO_CHECK" > /dev/null 2>&1; then
+  echo "📦 Installing Python dependencies..."
+  pip install --upgrade pip
+  pip install -r requirements.txt
+  pip install -r torch-requirements.txt
+else
+  echo "✅ Dependencies already installed, skipping pip install."
+fi
+
+# Step 4: Copy the systemd service file
 echo "🛠️  Setting up systemd service..."
 sudo cp "$PROJECT_DIR/yolo.service" /etc/systemd/system/yolo.service
 
