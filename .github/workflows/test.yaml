@@ -18,20 +18,19 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: 📦 Setup or reuse virtual environment
+      - name: 🧪 Setup venv, install dependencies, and run tests
         run: |
           if [ -d "venv" ]; then
-            echo "Virtual environment exists. Activating venv."
+            echo "✅ Virtual environment exists."
           else
-            echo "Creating virtual environment..."
+            echo "🚀 Creating virtual environment and installing dependencies..."
             python -m venv venv
-            source venv/bin/activate
-            pip install --upgrade pip
-            pip install -r requirements.txt
-            pip install pytest
           fi
 
-      - name: ✅ Run API tests
-        run: |
           source venv/bin/activate
-          pytest tests/test_api.py
+          pip install --upgrade pip
+          pip install -r requirements.txt || echo "⚠️ requirements.txt not found or failed"
+          pip install httpx pytest
+
+          echo "✅ Running API tests..."
+          pytest tests/test_predict.py
