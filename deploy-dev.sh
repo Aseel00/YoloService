@@ -4,7 +4,7 @@ set -e  # Exit immediately if a command exits with a non-zero status
 
 PROJECT_DIR="/home/ubuntu/YoloService"
 VENV_DIR="$PROJECT_DIR/.venv"
-SERVICE_NAME="yolo-dev-service"
+SERVICE_NAME="yolo-dev.service"
 
 
 echo "🐍 Detecting Python version..."
