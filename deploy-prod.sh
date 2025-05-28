@@ -4,6 +4,7 @@ set -e  # Exit immediately if a command exits with a non-zero status
 
 PROJECT_DIR="/home/ubuntu/YoloService"
 VENV_DIR="$PROJECT_DIR/.venv"
+SERVICE_NAME="yolo-prod-service"
 
 echo "📁 Navigating to project directory: $PROJECT_DIR"
 cd "$PROJECT_DIR"
@@ -34,20 +35,20 @@ fi
 
 # Step 4: Copy the systemd service file
 echo "🛠️  Setting up systemd service..."
-sudo cp "$PROJECT_DIR/yolo.service" /etc/systemd/system/yolo.service
+sudo cp "$PROJECT_DIR/$SERVICE_NAME" /etc/systemd/system/$SERVICE_NAME
 
 # Step 4: Reload systemd and restart the service
 echo "🔄 Reloading systemd and restarting YOLO service..."
 sudo systemctl daemon-reload
-sudo systemctl restart yolo.service
-sudo systemctl enable yolo.service
+sudo systemctl restart $SERVICE_NAME
+sudo systemctl enable $SERVICE_NAME
 
 # Step 5: Check service status
 echo "🔍 Checking yolo.service status..."
-if systemctl is-active --quiet yolo.service; then
+if systemctl is-active --quiet $SERVICE_NAME  ; then
   echo "✅ yolo.service is running."
 else
   echo "❌ yolo.service failed to start."
-  sudo systemctl status yolo.service --no-pager
+  sudo systemctl status $SERVICE_NAME --no-pager
   exit 1
 fi
