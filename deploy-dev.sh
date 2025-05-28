@@ -48,8 +48,8 @@ if ! pip show "$PACKAGE_TO_CHECK" > /dev/null 2>&1; then
   df -h
 
   pip install --upgrade pip
-  pip install -r requirements.txt
   pip install -r torch-requirements.txt
+  pip install -r requirements.txt
 else
   echo "✅ Dependencies already installed, skipping pip install."
 fi
