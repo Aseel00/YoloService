@@ -43,6 +43,10 @@ PACKAGE_TO_CHECK="fastapi"
 
 if ! pip show "$PACKAGE_TO_CHECK" > /dev/null 2>&1; then
   echo "📦 Installing Python dependencies..."
+
+  echo "🧮 Disk space before install:"
+  df -h
+
   pip install --upgrade pip
   pip install -r requirements.txt
   pip install -r torch-requirements.txt
