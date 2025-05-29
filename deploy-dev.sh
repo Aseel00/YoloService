@@ -55,6 +55,55 @@ else
   echo "✅ Dependencies already installed, skipping pip install."
 fi
 
+# Step 4: Install OpenTelemetry Collector (OTC)
+if ! command -v otelcol &> /dev/null; then
+  echo "📡 Installing OpenTelemetry Collector..."
+  sudo apt-get install -y wget
+  wget https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v0.127.0/otelcol_0.127.0_linux_amd64.deb
+  sudo dpkg -i otelcol_0.127.0_linux_amd64.deb
+else
+  echo "✅ OpenTelemetry Collector already installed, skipping install."
+fi
+
+# Step 5: Configure OTC
+echo "⚙️ Writing OpenTelemetry Collector config to /etc/otelcol/config.yaml..."
+sudo tee /etc/otelcol/config.yaml > /dev/null <<EOL
+receivers:
+  hostmetrics:
+    collection_interval: 15s
+    scrapers:
+      cpu:
+      memory:
+      disk:
+      filesystem:
+      load:
+      network:
+      processes:
+
+exporters:
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+
+service:
+  pipelines:
+    metrics:
+      receivers: [hostmetrics]
+      exporters: [prometheus]
+EOL
+
+# Step 6: Restart and verify OTC
+echo "🔁 Restarting OpenTelemetry Collector..."
+sudo systemctl restart otelcol
+
+echo "🔍 Checking OpenTelemetry Collector status..."
+if systemctl is-active --quiet otelcol; then
+  echo "✅ OpenTelemetry Collector is running."
+else
+  echo "❌ OpenTelemetry Collector failed to start."
+  sudo systemctl status otelcol --no-pager
+  exit 1
+fi
+
 # Step 4: Copy the systemd service file
 echo "🛠️  Setting up systemd service..."
 sudo cp "$PROJECT_DIR/$SERVICE_NAME" /etc/systemd/system/$SERVICE_NAME
