@@ -20,15 +20,16 @@ echo "📁 Navigating to project directory: $PROJECT_DIR"
 cd "$PROJECT_DIR"
 
 # Step 1: Set up virtual environment if it doesn't exist
-echo "🧹 Removing existing virtual environment (if any)..."
-rm -rf "$VENV_DIR"
+if [ ! -d "$VENV_DIR" ]; then
+  echo "🐍 Creating virtual environment..."
+  python3 -m venv "$VENV_DIR"
 
-echo "🐍 Creating virtual environment..."
-python3 -m venv "$VENV_DIR"
-
-if [ ! -f "$VENV_DIR/bin/activate" ]; then
-  echo "❌ Failed to create virtual environment. Exiting."
-  exit 1
+  if [ ! -f "$VENV_DIR/bin/activate" ]; then
+    echo "❌ Failed to create virtual environment. Exiting."
+    exit 1
+  fi
+else
+  echo "📦 Existing virtual environment found, reusing it."
 fi
 
 
