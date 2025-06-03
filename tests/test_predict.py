@@ -27,7 +27,7 @@ def test_predict_failure():
     response = client.post("/predict", data={"file": "not-an-image"})
     assert response.status_code in [400, 422]
 
-def test_get_prediction_by_uid_success():
+def test_get_prediction_by_uid_success(prediction_uid):
     response = client.get(f"/prediction/{prediction_uid}")
     assert response.status_code == 200
     assert "detection_objects" in response.json()
@@ -46,7 +46,7 @@ def test_get_predictions_by_score_success():
     assert response.status_code == 200
     assert isinstance(response.json(), list)
 
-def test_get_prediction_image_success():
+def test_get_prediction_image_success(prediction_uid):
     response = client.get(f"/prediction/{prediction_uid}/image", headers={"accept": "image/png"})
     assert response.status_code == 200
     assert response.headers["content-type"].startswith("image/")
