@@ -96,6 +96,8 @@ async def predict(image_name: Optional[str] = Form(None), file: Optional[UploadF
     """
     try:
         uid = str(uuid.uuid4())
+        ext= ""
+        s3 = boto3.client("s3", REGION)
         #image_name = data.image_name
         if image_name:
         #uid = str(uuid.uuid4())
@@ -104,7 +106,7 @@ async def predict(image_name: Optional[str] = Form(None), file: Optional[UploadF
             predicted_path = os.path.join(PREDICTED_DIR, uid + ext)
 
             # Download from S3
-            s3 = boto3.client("s3",REGION)
+
             s3_object = s3.get_object(Bucket=BUCKET_NAME, Key=image_name)
             image_bytes = s3_object["Body"].read()
             image = Image.open(io.BytesIO(image_bytes))
