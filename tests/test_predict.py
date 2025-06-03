@@ -7,13 +7,21 @@ from app import app
 client = TestClient(app)
 IMAGE_PATH = "tests/image/test.jpg"
 
+import pytest
+
+@pytest.fixture(scope="module")
+def prediction_uid():
+    with open(IMAGE_PATH, "rb") as f:
+        response = client.post("/predict", files={"file": f})
+    assert response.status_code == 200
+    return response.json()["prediction_uid"]
+
 def test_predict_success():
     with open(IMAGE_PATH, "rb") as f:
         response = client.post("/predict", files={"file": f})
     assert response.status_code == 200
     assert "prediction_uid" in response.json()
-    global prediction_uid  # Store UID for later use
-    prediction_uid = response.json()["prediction_uid"]
+
 
 def test_predict_failure():
     response = client.post("/predict", data={"file": "not-an-image"})
