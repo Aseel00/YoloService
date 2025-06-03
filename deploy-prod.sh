@@ -104,6 +104,7 @@ else
   exit 1
 fi
 
+pip install boto3
 # Step 4: Copy the systemd service file
 echo "🛠️  Setting up systemd service..."
 sudo cp "$PROJECT_DIR/$SERVICE_NAME" /etc/systemd/system/$SERVICE_NAME
