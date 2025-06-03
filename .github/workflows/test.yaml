@@ -33,5 +33,8 @@ jobs:
           pip install httpx pytest
           pip install boto3
 
+
+          export REGION='${{ secrets.REGION }}'
+          export BUCKET_NAME='${{ secrets.BUCKET_NAME}}'
           echo "✅ Running API tests..."
           pytest tests/test_predict.py
