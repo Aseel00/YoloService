@@ -94,10 +94,10 @@ async def predict(image_name: Optional[str] = Form(None), file: Optional[UploadF
     """
     Predict objects in an image fetched from S3
     """
+    s3 = boto3.client("s3", REGION)
     try:
         uid = str(uuid.uuid4())
         ext= ""
-        s3 = boto3.client("s3", REGION)
         #image_name = data.image_name
         if image_name:
         #uid = str(uuid.uuid4())

@@ -7,27 +7,19 @@ from app import app
 client = TestClient(app)
 IMAGE_PATH = "tests/image/test.jpg"
 
-import pytest
-
-@pytest.fixture(scope="module")
-def prediction_uid():
-    with open(IMAGE_PATH, "rb") as f:
-        response = client.post("/predict", files={"file": f})
-    assert response.status_code == 200
-    return response.json()["prediction_uid"]
-
 def test_predict_success():
     with open(IMAGE_PATH, "rb") as f:
         response = client.post("/predict", files={"file": f})
     assert response.status_code == 200
     assert "prediction_uid" in response.json()
-
+    global prediction_uid  # Store UID for later use
+    prediction_uid = response.json()["prediction_uid"]
 
 def test_predict_failure():
     response = client.post("/predict", data={"file": "not-an-image"})
     assert response.status_code in [400, 422]
 
-def test_get_prediction_by_uid_success(prediction_uid):
+def test_get_prediction_by_uid_success():
     response = client.get(f"/prediction/{prediction_uid}")
     assert response.status_code == 200
     assert "detection_objects" in response.json()
@@ -46,7 +38,7 @@ def test_get_predictions_by_score_success():
     assert response.status_code == 200
     assert isinstance(response.json(), list)
 
-def test_get_prediction_image_success(prediction_uid):
+def test_get_prediction_image_success():
     response = client.get(f"/prediction/{prediction_uid}/image", headers={"accept": "image/png"})
     assert response.status_code == 200
     assert response.headers["content-type"].startswith("image/")
