@@ -33,6 +33,7 @@ jobs:
           pip install httpx pytest
           pip install boto3
 
+
           echo "run exports"
           export REGION='${{ secrets.REGION }}'
           export BUCKET_NAME='${{ secrets.BUCKET_NAME}}'
