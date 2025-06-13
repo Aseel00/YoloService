@@ -1,4 +1,4 @@
-name: Build YOLO Prod Image
+name: Build YOLO Dev Image
 
 on:
   push:
@@ -20,19 +20,19 @@ jobs:
       - name: Build and Push Image
         id: build_and_push
         run: |
-          img= aseelarr/yolo-prod:${{ github.run_number }}
+          img=aseelarr/yolo-prod:${{ github.run_number }}
           docker build -t $img .
           docker push $img
           echo "image=$img" >> $GITHUB_OUTPUT
 
   deploy:
     needs: build
-    uses: Aseel00/YoloService/.github/workflows/deploy-yolo-prod.yaml@main
+    uses: ./.github/workflows/deploy-prod.yaml
     with:
       image: aseelarr/yolo-prod:${{ github.run_number }}
     secrets:
       SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-      EC2_HOST: ${{ secrets.EC2_HOST}}
+      EC2_HOST: ${{ secrets.EC2_HOST }}
       EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
       REGION: ${{ secrets.REGION }}
-      BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+      BUCKET_NAME: ${{ secrets.BUCKET_NAME}}
