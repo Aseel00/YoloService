@@ -46,6 +46,7 @@ jobs:
           echo "REGION=${{ secrets.REGION }}" >> .env
           echo "BUCKET_NAME=${{ secrets.BUCKET_NAME }}" >> .env
           
+          cat .env  # debug output
           
           docker compose -f docker-compose.yolo.prod.yaml pull
           docker compose -f docker-compose.yolo.prod.yaml up -d 

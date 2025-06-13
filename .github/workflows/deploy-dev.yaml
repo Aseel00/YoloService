@@ -47,6 +47,7 @@ jobs:
           echo "BUCKET_NAME=${{ secrets.BUCKET_NAME_DEV }}" >> .env
           
           
+          cat .env  # debug output
           
           docker compose -f docker-compose.yolo.dev.yaml pull
           docker compose -f docker-compose.yolo.dev.yaml up -d 
