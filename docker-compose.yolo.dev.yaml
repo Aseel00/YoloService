@@ -5,3 +5,19 @@ services:
       - "8080:8080"
     env_file:
       - .env
+    depends_on:
+      -otelcol
+
+  otelcol:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: otelcol
+    volumes:
+      - ./otelcol-config.yaml:/etc/otelcol/config.yaml
+      - /proc:/hostfs/proc:ro
+      - /sys:/hostfs/sys:ro
+    ports:
+      - "8889:8889"  # Prometheus scraper port
+    environment:
+      - HOST_PROC=/hostfs/proc
+      - HOST_SYS=/hostfs/sys
+    network_mode: host
