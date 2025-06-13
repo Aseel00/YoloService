@@ -34,13 +34,6 @@ jobs:
             IdentityFile ~/.ssh/private_key
             StrictHostKeyChecking no
           EOF
-          
-
-      - name: Debug output image
-        run: |
-          echo "Image passed: ${{ inputs.image }}"
-
-
 
       - name: Deploy YOLO Container
         run: |
@@ -48,11 +41,13 @@ jobs:
           cd ~/YoloService  # update if needed
           git fetch origin
           git reset --hard origin/dev
-          
-          rm -f .env
-          
-          echo "IMG_NAME=${{ inputs.image }}" > .env
 
+          echo "IMG_NAME=${{ inputs.image }}" > .env
+          echo "REGION=${{ secrets.REGION }}" >> .env
+          echo "BUCKET_NAME=${{ secrets.BUCKET_NAME_DEV }}" >> .env
+          
+          
+          
           docker compose -f docker-compose.yolo.dev.yaml pull
           docker compose -f docker-compose.yolo.dev.yaml up -d 
           EOF
