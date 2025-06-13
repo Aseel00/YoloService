@@ -8,6 +8,7 @@ ExecStart=/home/ubuntu/YoloService/.venv/bin/python /home/ubuntu/YoloService/app
 Restart=always
 Environment=PYTHONUNBUFFERED=1
 User=ubuntu
+EnvironmentFile=/home/ubuntu/YoloService/.env
 
 [Install]
 WantedBy=multi-user.target
