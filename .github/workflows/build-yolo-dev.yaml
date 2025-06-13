@@ -20,7 +20,7 @@ jobs:
       - name: Build and Push Image
         id: build_and_push
         run: |
-          img= aseelarr/yolo-dev:${{ github.run_number }}
+          img=aseelarr/yolo-dev:${{ github.run_number }}
           docker build -t $img .
           docker push $img
           echo "image=$img" >> $GITHUB_OUTPUT
