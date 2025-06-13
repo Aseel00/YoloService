@@ -27,7 +27,7 @@ jobs:
 
   deploy:
     needs: build
-    uses: ./.github/workflows/deploy-yolo-dev.yaml
+    uses: ./.github/workflows/deploy-dev.yaml
     with:
       image: aseelarr/yolo-dev:${{ github.run_number }}
     secrets:
