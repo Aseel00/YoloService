@@ -43,7 +43,11 @@ jobs:
           git reset --hard origin/dev
 
           echo "IMG_NAME=${{ inputs.image }}" > .env
-
+          echo "REGION=${{ secrets.REGION }}" >> .env
+          echo "BUCKET_NAME=${{ secrets.BUCKET_NAME_DEV }}" >> .env
+          
+          
+          
           docker compose -f docker-compose.yolo.dev.yaml pull
           docker compose -f docker-compose.yolo.dev.yaml up -d 
           EOF
