@@ -56,7 +56,7 @@ while True:
             callback_url = body["callback_url"]
             prediction_id = body["prediction_id"]
 
-            print(f"🧠 Processing prediction: {prediction_id}")
+            print(f"🧠 Processin prediction: {prediction_id}")
 
             # Download image from S3
             s3_object = s3.get_object(Bucket=BUCKET, Key=image_name)
