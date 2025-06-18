@@ -70,9 +70,14 @@ while True:
             print("after save image")
             # Run YOLO
             results = model(input_path, device="cpu")
-            annotated_frame = results[0].plot()
-            annotated_image = Image.fromarray(annotated_frame)
-            annotated_image.save(output_path)
+            try:
+                annotated_frame = results[0].plot()
+                annotated_image = Image.fromarray(annotated_frame)
+                annotated_image.save(output_path)
+                print("✅ Annotated image saved.")
+            except Exception as e:
+                print(f"⚠️ Failed to generate/save annotated image: {e}")
+
             print("before upload file")
             # Upload result image
             s3.upload_file(output_path, BUCKET, f"predicted/{prediction_id}.jpg")
