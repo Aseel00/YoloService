@@ -87,6 +87,8 @@ while True:
                 labels.append(label)
                 storage.save_detection_object(prediction_id, label, score, bbox,i)
 
+            print("🧾 Saved all detections.")
+
             # Save session metadata
             storage.save_prediction_session(prediction_id, image_name, f"predicted/{prediction_id}.jpg")
 
