@@ -17,6 +17,12 @@ on:
         required: true
       BUCKET_NAME_DEV:
         required: true
+      TABLE_NAME_DEV:
+        required: true
+      SQS_URL_DEV:
+        required: true
+      STORAGE_TYPE_DEV:
+        required: true
 
 jobs:
   deploy:
@@ -49,7 +55,9 @@ jobs:
           echo "IMG_NAME=${{ inputs.image }}" > .env
           echo "REGION=${{ secrets.REGION }}" >> .env
           echo "BUCKET_NAME=${{ secrets.BUCKET_NAME_DEV }}" >> .env
-          
+          echo "DDB_TABLE_NAME=${{ secrets.TABLE_NAME_DEV }}" >> .env
+          echo "SQS_URL=${{ secrets.SQS_URL_DEV }}" >>.env
+          echo "STORAGE_TYPE=${{ secrets.STORAGE_TYPE_DEV }}" >> .env
           
           cat .env  # debug output
           
