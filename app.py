@@ -91,10 +91,16 @@ while True:
             storage.save_prediction_session(prediction_id, image_name, f"predicted/{prediction_id}.jpg")
 
             # Callback Polybot
-            requests.post(callback_url, json={
-                "chat_id": chat_id,
-                "prediction_id": prediction_id
-            })
+            print(f"📡 Sending callback to: {callback_url}")
+            try:
+                response = requests.post(callback_url, json={
+                    "chat_id": chat_id,
+                    "prediction_id": prediction_id
+                }, timeout=5)  # Add timeout to prevent hanging forever
+
+                print(f"📬 Callback response: {response.status_code} {response.text}")
+            except Exception as e:
+                print(f"❌ Failed to send callback: {e}")
 
             print(f"✅ Done: {prediction_id}")
 
