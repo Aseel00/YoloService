@@ -62,12 +62,12 @@ while True:
             s3_object = s3.get_object(Bucket=BUCKET, Key=image_name)
             image_bytes = s3_object["Body"].read()
             image = Image.open(io.BytesIO(image_bytes))
-
+            print("after open image")
             # Local paths
             input_path = f"/tmp/{prediction_id}.jpg"
             output_path = f"/tmp/{prediction_id}_pred.jpg"
             image.save(input_path)
-
+            print("after save image")
             # Run YOLO
             results = model(input_path, device="cpu")
             annotated_frame = results[0].plot()
