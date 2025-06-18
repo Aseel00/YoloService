@@ -75,13 +75,18 @@ while True:
                 annotated_image = Image.fromarray(annotated_frame)
                 annotated_image.save(output_path)
                 print("✅ Annotated image saved.")
+                image_saved = True
             except Exception as e:
                 print(f"⚠️ Failed to generate/save annotated image: {e}")
+                image_saved = False
 
-            print("before upload file")
-            # Upload result image
-            s3.upload_file(output_path, BUCKET, f"predicted/{prediction_id}.jpg")
-            print("after upload file")
+            if image_saved and os.path.exists(output_path):
+                print("📤 Uploading annotated image to S3...")
+                s3.upload_file(output_path, BUCKET, f"predicted/{prediction_id}.jpg")
+                print("✅ Annotated image uploaded.")
+            else:
+                print("⚠️ Skipped upload: annotated image missing.")
+
             # Collect labels and boxes
             labels = []
             for i, box in enumerate(results[0].boxes):
