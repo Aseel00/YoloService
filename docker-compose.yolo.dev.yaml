@@ -9,11 +9,11 @@ services:
     depends_on:
       - otelcol
 
+
   otelcol:
     image: otel/opentelemetry-collector-contrib:latest
     restart: unless-stopped
     command: [ "--config=/etc/otelcol/config.yaml" ]
-
     container_name: otelcol
     volumes:
       - ./otelcol-config.yaml:/etc/otelcol/config.yaml

@@ -38,10 +38,15 @@ jobs:
       - name: Deploy YOLO Container
         run: |
           ssh ec2 <<EOF
+          set -e 
           cd ~/YoloService  # update if needed
           git fetch origin
           git reset --hard origin/main
 
+
+          sudo rm -f .env
+          touch .env && chmod 644 .env
+          
           echo "IMG_NAME=${{ inputs.image }}" > .env
           echo "REGION=${{ secrets.REGION }}" >> .env
           echo "BUCKET_NAME=${{ secrets.BUCKET_NAME }}" >> .env
