@@ -76,16 +76,17 @@ while True:
             except Exception as e:
                 print(f"❌ YOLO model failed: {e}", flush=True)
                 continue  # skip to next message if detection fails
+#
+ #           try:
+  #              annotated_frame = results[0].plot()
+   #             annotated_image = Image.fromarray(annotated_frame)
+    #            annotated_image.save(output_path)
+     #           print("✅ Annotated image saved.")
+      #          image_saved = True
+       #     except Exception as e:
 
-            try:
-                annotated_frame = results[0].plot()
-                annotated_image = Image.fromarray(annotated_frame)
-                annotated_image.save(output_path)
-                print("✅ Annotated image saved.")
-                image_saved = True
-            except Exception as e:
-                print(f"⚠️ Failed to generate/save annotated image: {e}")
-                image_saved = False
+        #        print(f"⚠️ Failed to generate/save annotated image: {e}")
+            image_saved = False
 
             if image_saved and os.path.exists(output_path):
                 print("📤 Uploading annotated image to S3...")
