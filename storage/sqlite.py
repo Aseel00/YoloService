@@ -38,7 +38,7 @@ class SQLiteStorage(PredictionStorage):
                 VALUES (?, ?, ?)
             """, (uid, original_image, predicted_image))
 
-    def save_detection_object(self, prediction_uid, label, score, box):
+    def save_detection_object(self, prediction_uid, label, score, box,index):
         with sqlite3.connect(self.db_path) as conn:
             conn.execute("""
                 INSERT INTO detection_objects (prediction_uid, label, score, box)

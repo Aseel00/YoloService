@@ -85,7 +85,7 @@ while True:
                 bbox = list(map(float, box.xyxy[0].tolist()))
 
                 labels.append(label)
-                storage.save_detection_object(prediction_id, label, score, bbox)
+                storage.save_detection_object(prediction_id, label, score, bbox,i)
 
             # Save session metadata
             storage.save_prediction_session(prediction_id, image_name, f"predicted/{prediction_id}.jpg")

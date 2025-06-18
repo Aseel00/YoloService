@@ -16,10 +16,10 @@ class DynamoDBStorage(PredictionStorage):
             "predicted_image": predicted_image
         })
 
-    def save_detection_object(self, prediction_uid, label, score, box):
+    def save_detection_object(self, prediction_uid, label, score, box,index):
         self.table.put_item(Item={
             "PK": f"PRED#{prediction_uid}",
-            "SK": f"OBJECT#{label}",
+            "SK": f"OBJECT#{index}",
             "label": label,
             "score": Decimal(str(score)),
             "box": json.dumps(box)
