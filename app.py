@@ -69,7 +69,14 @@ while True:
             image.save(input_path)
             print("after save image")
             # Run YOLO
-            results = model(input_path, device="cpu")
+            try:
+                print("🔍 Running YOLO model...", flush=True)
+                results = model(input_path, device="cpu")
+                print("✅ YOLO model finished.", flush=True)
+            except Exception as e:
+                print(f"❌ YOLO model failed: {e}", flush=True)
+                continue  # skip to next message if detection fails
+
             try:
                 annotated_frame = results[0].plot()
                 annotated_image = Image.fromarray(annotated_frame)
