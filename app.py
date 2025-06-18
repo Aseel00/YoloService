@@ -73,10 +73,10 @@ while True:
             annotated_frame = results[0].plot()
             annotated_image = Image.fromarray(annotated_frame)
             annotated_image.save(output_path)
-
+            print("before upload file")
             # Upload result image
             s3.upload_file(output_path, BUCKET, f"predicted/{prediction_id}.jpg")
-
+            print("after upload file")
             # Collect labels and boxes
             labels = []
             for i, box in enumerate(results[0].boxes):
