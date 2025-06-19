@@ -96,33 +96,37 @@ while True:
                 print("⚠️ Skipped upload: annotated image missing.")
 
             # Collect labels and boxes
-            labels = []
-            for i, box in enumerate(results[0].boxes):
-                label = model.names[int(box.cls[0])]
-                score = float(box.conf[0])
-                bbox = list(map(float, box.xyxy[0].tolist()))
-
-                labels.append(label)
-                storage.save_detection_object(prediction_id, label, score, bbox,i)
-
-            print("🧾 Saved all detections.")
-
-            # Save session metadata
-            storage.save_prediction_session(prediction_id, image_name, f"predicted/{prediction_id}.jpg")
 
             # Callback Polybot
-            print(f"📡 Sending callback to: {callback_url}")
             try:
+                print("🔽 Postprocessing started...", flush=True)
+
+                labels = []
+                for i, box in enumerate(results[0].boxes):
+                    label = model.names[int(box.cls[0])]
+                    score = float(box.conf[0])
+                    bbox = list(map(float, box.xyxy[0].tolist()))
+
+                    labels.append(label)
+                    storage.save_detection_object(prediction_id, label, score, bbox, i)
+
+                print("🧾 Saved all detections.")
+
+                storage.save_prediction_session(prediction_id, image_name, f"predicted/{prediction_id}.jpg")
+                print("🗃️ Saved prediction metadata.")
+
+                print(f"📡 Sending callback to: {callback_url}")
                 response = requests.post(callback_url, json={
                     "chat_id": chat_id,
                     "prediction_id": prediction_id
-                }, timeout=5)  # Add timeout to prevent hanging forever
+                }, timeout=5)
 
                 print(f"📬 Callback response: {response.status_code} {response.text}")
-            except Exception as e:
-                print(f"❌ Failed to send callback: {e}")
+                print(f"✅ Done: {prediction_id}")
 
-            print(f"✅ Done: {prediction_id}")
+            except Exception as e:
+                print(f"❌ Postprocessing failed: {e}", flush=True)
+
 
         except Exception as e:
             print(f"❌ Error: {e}")
