@@ -110,10 +110,10 @@ while True:
                     labels.append(label)
                     storage.save_detection_object(prediction_id, label, score, bbox, i)
 
-                print("🧾 Saved all detections.")
+                print("🧾 Saved all detections.", flush=True )
 
                 storage.save_prediction_session(prediction_id, image_name, f"predicted/{prediction_id}.jpg")
-                print("🗃️ Saved prediction metadata.")
+                print("🗃️ Saved prediction metadata.", flush=True)
 
                 print(f"📡 Sending callback to: {callback_url}")
                 response = requests.post(callback_url, json={
@@ -121,8 +121,8 @@ while True:
                     "prediction_id": prediction_id
                 }, timeout=5)
 
-                print(f"📬 Callback response: {response.status_code} {response.text}")
-                print(f"✅ Done: {prediction_id}")
+                print(f"📬 Callback response: {response.status_code} {response.text}",flush=True )
+                print(f"✅ Done: {prediction_id}", flush=True)
 
             except Exception as e:
                 print(f"❌ Postprocessing failed: {e}", flush=True)
