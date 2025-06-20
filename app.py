@@ -15,7 +15,7 @@ BUCKET = os.environ["BUCKET_NAME"]
 SQS_URL = os.environ["SQS_URL"]
 STORAGE_TYPE = os.getenv("STORAGE_TYPE", "sqlite")
 TABLE_NAME = os.environ["DDB_TABLE_NAME"]
-CALLBACK_BASE_URL = os.environ["CALLBACK_BASE_URL"]
+POLYBOT_URL = os.environ["POLYBOT_URL"]
 
 
 UPLOAD_DIR = "uploads/original"
