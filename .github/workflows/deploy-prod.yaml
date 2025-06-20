@@ -23,6 +23,8 @@ on:
         required: true
       STORAGE_TYPE:
         required: true
+      POLYBOT_URL:
+        required: true
 
 jobs:
   deploy:
@@ -42,6 +44,8 @@ jobs:
           EOF
 
       - name: Deploy YOLO Container
+        env:
+          POLYBOT_URL: ${{ secrets.POLYBOT_URL }}
         run: |
           ssh ec2 <<EOF
           set -e 
@@ -59,6 +63,7 @@ jobs:
           echo "DDB_TABLE_NAME=${{ secrets.TABLE_NAME }}" >> .env
           echo "SQS_URL=${{ secrets.SQS_URL }}" >>.env
           echo "STORAGE_TYPE={{ secrets.STORAGE_TYPE }}" >> .env
+          echo "POLYBOT_URL=http://$POLYBOT_URL:8443" >> .env 
           
           cat .env  # debug output
           

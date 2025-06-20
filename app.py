@@ -15,6 +15,8 @@ BUCKET = os.environ["BUCKET_NAME"]
 SQS_URL = os.environ["SQS_URL"]
 STORAGE_TYPE = os.getenv("STORAGE_TYPE", "sqlite")
 TABLE_NAME = os.environ["DDB_TABLE_NAME"]
+CALLBACK_BASE_URL = os.environ["CALLBACK_BASE_URL"]
+
 
 UPLOAD_DIR = "uploads/original"
 PREDICTED_DIR = "uploads/predicted"
@@ -59,8 +61,8 @@ while True:
 
             image_name = body["image_name"]
             chat_id = body["chat_id"]
-            callback_url = body["callback_url"]
             prediction_id = body["prediction_id"] # prediction_id = str(uuid.uuid4())
+            callback_url = f"{CALLBACK_BASE_URL}/predictions/{prediction_id}"
 
             print(f"🧠 Processing prediction: {prediction_id}")
 
