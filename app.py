@@ -8,6 +8,7 @@ import requests
 from PIL import Image
 from ultralytics import YOLO
 
+
 # === ENV CONFIG ===
 REGION = os.environ["REGION"]
 BUCKET = os.environ["BUCKET_NAME"]
@@ -15,6 +16,11 @@ SQS_URL = os.environ["SQS_URL"]
 STORAGE_TYPE = os.getenv("STORAGE_TYPE", "sqlite")
 TABLE_NAME = os.environ["DDB_TABLE_NAME"]
 
+UPLOAD_DIR = "uploads/original"
+PREDICTED_DIR = "uploads/predicted"
+
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+os.makedirs(PREDICTED_DIR, exist_ok=True)
 
 # === MODEL ===
 model = YOLO("yolov8n.pt")
@@ -40,7 +46,7 @@ print("🚀 YOLO SQS Worker is running...")
 while True:
     response = sqs.receive_message(
         QueueUrl=SQS_URL,
-        MaxNumberOfMessages=1,
+        MaxNumberOfMessages=5,
         WaitTimeSeconds=20
     )
     messages = response.get("Messages", [])
@@ -54,20 +60,21 @@ while True:
             image_name = body["image_name"]
             chat_id = body["chat_id"]
             callback_url = body["callback_url"]
-            prediction_id = body["prediction_id"]
+            prediction_id = body["prediction_id"] # prediction_id = str(uuid.uuid4())
 
-            print(f"🧠 Processin prediction: {prediction_id}")
+            print(f"🧠 Processing prediction: {prediction_id}")
 
             # Download image from S3
             s3_object = s3.get_object(Bucket=BUCKET, Key=image_name)
             image_bytes = s3_object["Body"].read()
             image = Image.open(io.BytesIO(image_bytes))
-            print("after open image")
+
             # Local paths
-            input_path = f"/tmp/{prediction_id}.jpg"
-            output_path = f"/tmp/{prediction_id}_pred.jpg"
+            input_path = os.path.join(UPLOAD_DIR, f"{prediction_id}.jpg")
+            output_path = os.path.join(PREDICTED_DIR, f"{prediction_id}.jpg")
+
             image.save(input_path)
-            print("after save image")
+
             # Run YOLO
             try:
                 print("🔍 Running YOLO model...", flush=True)
@@ -76,17 +83,17 @@ while True:
             except Exception as e:
                 print(f"❌ YOLO model failed: {e}", flush=True)
                 continue  # skip to next message if detection fails
-#
- #           try:
-  #              annotated_frame = results[0].plot()
-   #             annotated_image = Image.fromarray(annotated_frame)
-    #            annotated_image.save(output_path)
-     #           print("✅ Annotated image saved.")
-      #          image_saved = True
-       #     except Exception as e:
 
-        #        print(f"⚠️ Failed to generate/save annotated image: {e}")
-            image_saved = False
+            try:
+                annotated_frame = results[0].plot()
+                annotated_image = Image.fromarray(annotated_frame)
+                annotated_image.save(output_path)
+                print("✅ Annotated image saved.")
+                image_saved = True
+            except Exception as e:
+
+                print(f"⚠️ Failed to generate/save annotated image: {e}")
+                image_saved = False
 
             if image_saved and os.path.exists(output_path):
                 print("📤 Uploading annotated image to S3...")
@@ -136,3 +143,4 @@ while True:
             QueueUrl=SQS_URL,
             ReceiptHandle=msg["ReceiptHandle"]
         )
+
