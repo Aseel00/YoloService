@@ -62,7 +62,7 @@ while True:
             image_name = body["image_name"]
             chat_id = body["chat_id"]
             prediction_id = body["prediction_id"] # prediction_id = str(uuid.uuid4())
-            callback_url = f"{CALLBACK_BASE_URL}/predictions/{prediction_id}"
+            callback_url = f"{POLYBOT_URL}/predictions/{prediction_id}"
 
             print(f"🧠 Processing prediction: {prediction_id}")
 
