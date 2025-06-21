@@ -62,7 +62,7 @@ jobs:
           echo "BUCKET_NAME=${{ secrets.BUCKET_NAME }}" >> .env
           echo "DDB_TABLE_NAME=${{ secrets.TABLE_NAME }}" >> .env
           echo "SQS_URL=${{ secrets.SQS_URL }}" >>.env
-          echo "STORAGE_TYPE={{ secrets.STORAGE_TYPE }}" >> .env
+          echo "STORAGE_TYPE=${{ secrets.STORAGE_TYPE }}" >> .env
           echo "POLYBOT_URL=http://$POLYBOT_URL:8443" >> .env 
           
           cat .env  # debug output
