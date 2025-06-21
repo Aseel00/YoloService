@@ -39,4 +39,4 @@ jobs:
       TABLE_NAME_DEV: ${{ secrets.TABLE_NAME_DEV }}
       SQS_URL_DEV: ${{ secrets.SQS_URL_DEV }}
       STORAGE_TYPE_DEV: ${{ secrets.STORAGE_TYPE_DEV }}
-      POLYBOT_URL_DEV: $(( secrets.POLYBOT_URL_DEV }}
+      POLYBOT_URL_DEV: ${{ secrets.POLYBOT_URL_DEV }}
