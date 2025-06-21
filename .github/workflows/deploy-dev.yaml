@@ -17,6 +17,14 @@ on:
         required: true
       BUCKET_NAME_DEV:
         required: true
+      TABLE_NAME_DEV:
+        required: true
+      SQS_URL_DEV:
+        required: true
+      STORAGE_TYPE_DEV:
+        required: true
+      POLYBOT_URL_DEV:
+        required: true
 
 jobs:
   deploy:
@@ -36,6 +44,8 @@ jobs:
           EOF
 
       - name: Deploy YOLO Container
+        env:
+          POLYBOT_URL_DEV: ${{ secrets.POLYBOT_URL_DEV }}
         run: |
           ssh ec2 <<EOF
           set -e 
@@ -49,7 +59,11 @@ jobs:
           echo "IMG_NAME=${{ inputs.image }}" > .env
           echo "REGION=${{ secrets.REGION }}" >> .env
           echo "BUCKET_NAME=${{ secrets.BUCKET_NAME_DEV }}" >> .env
-          
+          echo "DDB_TABLE_NAME=${{ secrets.TABLE_NAME_DEV }}" >> .env
+          echo "SQS_URL=${{ secrets.SQS_URL_DEV }}" >>.env
+          echo "STORAGE_TYPE=${{ secrets.STORAGE_TYPE_DEV }}" >> .env
+          echo "POLYBOT_URL=http://$POLYBOT_URL_DEV:8443" >> .env
+
           
           cat .env  # debug output
           

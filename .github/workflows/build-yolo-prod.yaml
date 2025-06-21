@@ -36,3 +36,7 @@ jobs:
       EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
       REGION: ${{ secrets.REGION }}
       BUCKET_NAME: ${{ secrets.BUCKET_NAME}}
+      TABLE_NAME: ${{ secrets.TABLE_NAME }}
+      SQS_URL: ${{ secrets.SQS_URL }}
+      STORAGE_TYPE: ${{ secrets.STORAGE_TYPE }}
+      POLYBOT_URL: ${{ secrets.POLYBOT_URL }}
